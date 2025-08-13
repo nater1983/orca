@@ -206,40 +206,6 @@ def main():
 
     load_user_settings(is_reload=False)
 
-    try:
-        _a11y_applications_gsetting = Gio.Settings(schema_id="org.gnome.desktop.a11y.applications")
-        connection = _a11y_applications_gsetting.connect("changed", _on_enabled_changed)
-        msg = f"ORCA: Connected to a11y applications gsetting: {bool(connection)}"
-        debug.print_message(debug.LEVEL_INFO, msg, True)
-    except GLib.Error as error:
-        msg = f"ORCA: EXCEPTION connecting to a11y applications (schema may be missing): {error}"
-        debug.print_message(debug.LEVEL_SEVERE, msg, True)
-    except (AttributeError, TypeError) as error:
-        msg = f"ORCA: EXCEPTION connecting to a11y applications (version incompatibility): {error}"
-        debug.print_message(debug.LEVEL_SEVERE, msg, True)
-
-        # Legacy behavior, here for backwards-compatibility. You really should
-        # never rely on this. Run git blame and read the commit message!
-
-        def _on_enabled_changed(gsetting, key):
-            enabled = gsetting.get_boolean(key)
-            msg = f"ORCA: {key} changed to {enabled}."
-            debug.print_message(debug.LEVEL_INFO, msg, True)
-            if key == "screen-reader-enabled" and not enabled:
-                shutdown()
-
-        try:
-            _a11y_applications_gsetting = Gio.Settings(schema_id="org.gnome.desktop.a11y.applications")
-            connection = _a11y_applications_gsetting.connect("changed", _on_enabled_changed)
-            msg = f"ORCA: Connected to a11y applications gsetting: {bool(connection)}"
-            debug.print_message(debug.LEVEL_INFO, msg, True)
-        except GLib.Error as error:
-            msg = f"ORCA: EXCEPTION connecting to a11y applications (schema may be missing): {error}"
-            debug.print_message(debug.LEVEL_SEVERE, msg, True)
-        except (AttributeError, TypeError) as error:
-            msg = f"ORCA: EXCEPTION connecting to a11y applications (version incompatibility): {error}"
-            debug.print_message(debug.LEVEL_SEVERE, msg, True)
-
     dbus_service.get_remote_controller().start()
     script = script_manager.get_manager().get_default_script()
     script.present_message(messages.START_ORCA)
