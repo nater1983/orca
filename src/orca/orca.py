@@ -218,7 +218,6 @@ def main():
         msg = f"ORCA: EXCEPTION connecting to a11y applications (version incompatibility): {error}"
         debug.print_message(debug.LEVEL_SEVERE, msg, True)
 
-    if not systemd.get_manager().is_systemd_managed():
         # Legacy behavior, here for backwards-compatibility. You really should
         # never rely on this. Run git blame and read the commit message!
 
